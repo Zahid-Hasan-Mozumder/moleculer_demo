@@ -23,8 +23,8 @@ module.exports = {
 				autoAliases: true,
 
 				aliases: {
-					'GET   /hello' : 'greeter.hello',
-					'POST  /welcome' : 'greeter.welcome'
+					'GET   /hello': 'greeter.hello',
+					'POST  /welcome': 'greeter.welcome'
 				},
 
 				callOptions: {},
@@ -53,9 +53,38 @@ module.exports = {
 				autoAliases: true,
 
 				aliases: {
-					'GET  /weekend' : 'messages.weekend'
+					'GET  /weekend': 'messages.weekend'
 				},
 
+				callOptions: {},
+
+				bodyParsers: {
+					json: {
+						strict: false,
+						limit: "1MB"
+					},
+					urlencoded: {
+						extended: true,
+						limit: "1MB"
+					}
+				},
+
+				mappingPolicy: "all", // Available values: "all", "restrict"
+				logging: true
+			},
+			{
+				path: "/netsuite",
+				whitelist: ["**"],
+				use: [],
+				mergeParams: true,
+				authentication: false,
+				authorization: false,
+				autoAliases: true,
+
+				aliases: {
+					'POST  /notify': 'netsuite.notify'
+				},
+				
 				callOptions: {},
 
 				bodyParsers: {
