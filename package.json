@@ -20,8 +20,10 @@
     "moleculer-repl": "^0.7.3"
   },
   "dependencies": {
+    "moleculer": "^0.14.26",
     "moleculer-web": "^0.10.4",
-    "moleculer": "^0.14.26"
+    "mongoose": "^8.9.5",
+    "mongose": "^0.0.2-security"
   },
   "engines": {
     "node": ">= 16.x.x"
