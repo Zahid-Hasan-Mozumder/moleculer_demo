@@ -14,7 +14,7 @@ module.exports = {
 
 		routes: [
 			{
-				path: "/greet",
+				path: "/health",
 				whitelist: ["**"],
 				use: [],
 				mergeParams: true,
@@ -23,8 +23,7 @@ module.exports = {
 				autoAliases: true,
 
 				aliases: {
-					'GET   /hello': 'greeter.hello',
-					'POST  /welcome': 'greeter.welcome'
+					'GET   ': 'health.check'
 				},
 
 				callOptions: {},
@@ -44,7 +43,7 @@ module.exports = {
 				logging: true
 			},
 			{
-				path: "/message",
+				path: "/customers",
 				whitelist: ["**"],
 				use: [],
 				mergeParams: true,
@@ -53,7 +52,36 @@ module.exports = {
 				autoAliases: true,
 
 				aliases: {
-					'GET  /weekend': 'messages.weekend'
+					'GET   ': 'customer.getAll'
+				},
+
+				callOptions: {},
+
+				bodyParsers: {
+					json: {
+						strict: false,
+						limit: "1MB"
+					},
+					urlencoded: {
+						extended: true,
+						limit: "1MB"
+					}
+				},
+
+				mappingPolicy: "all", // Available values: "all", "restrict"
+				logging: true
+			},
+			{
+				path: "/items",
+				whitelist: ["**"],
+				use: [],
+				mergeParams: true,
+				authentication: false,
+				authorization: false,
+				autoAliases: true,
+
+				aliases: {
+					'GET   ': 'item.getAll'
 				},
 
 				callOptions: {},

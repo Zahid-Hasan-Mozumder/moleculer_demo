@@ -1,6 +1,7 @@
 "use strict";
 
 const db = require("./db/dbconnect");
+require('dotenv').config();
 
 module.exports = {
 	// Namespace of nodes to segment your nodes on the same network.

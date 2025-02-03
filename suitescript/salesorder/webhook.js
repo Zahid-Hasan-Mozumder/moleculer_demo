@@ -14,7 +14,7 @@ define(['N/https', 'N/runtime'], function (https, runtime) {
         var message = "No Status";
         if (orderStatus === "B") message = "Pending Fulfillment";
 
-        var webhookUrl = "https://3a63-103-112-54-213.ngrok-free.app/netsuite/notify";
+        var webhookUrl = "https://03e7-103-112-54-213.ngrok-free.app/netsuite/notify";
         var responseBody = { 
             "status": {
                 "orderId" : orderId,

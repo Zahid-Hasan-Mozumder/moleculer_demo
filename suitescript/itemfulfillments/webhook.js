@@ -16,9 +16,12 @@ define(['N/https', 'N/runtime', 'N/record'], function (https, runtime, record) {
             type: record.Type.SALES_ORDER,
             id: salesOrderId
         });
-        var salesOrderStatus = newRecord.getValue({ fieldId : 'orderstatus' });
 
-        var message = [];
+        var itemFulfillment = {
+            itemFulfillmentId : itemFulfillmentId,
+            salesOrderId : salesOrderId,
+            items : []
+        };
         var itemStatus = "No Status"
         if (shipStatus === "A") itemStatus = "Picked";
         if (shipStatus === "B") itemStatus = "Packed";
@@ -35,23 +38,20 @@ define(['N/https', 'N/runtime', 'N/record'], function (https, runtime, record) {
             var remaining = originalQuantity - quantityPickPackship;
             
             if(remaining){
-                message.push(
+                itemFulfillment.items.push(
                     {
-                        itemFulfillmentId: itemFulfillmentId,
-                        salesOrderId: salesOrderId,
                         itemId: itemId,
                         alreadyFulfilled : quantityFulfilled,
                         inProcess: inProcess,
                         originalQuantity: originalQuantity,
                         remaining: remaining,
                         statusType: "Partially",
-                        itemStatus: itemStatus,
-                        salesOrderStatus : salesOrderStatus
+                        itemStatus: itemStatus
                     }
                 )
             }
             else{
-                message.push(
+                itemFulfillment.items.push(
                     {
                         itemFulfillmentId: itemFulfillmentId,
                         salesOrderId: salesOrderId,
@@ -61,15 +61,14 @@ define(['N/https', 'N/runtime', 'N/record'], function (https, runtime, record) {
                         originalQuantity: originalQuantity,
                         remaining: remaining,
                         statusType: "Fully",
-                        itemStatus: itemStatus,
-                        salesOrderStatus : salesOrderStatus
+                        itemStatus: itemStatus
                     }
                 )
             }
         }
 
-        var webhookUrl = "https://3a63-103-112-54-213.ngrok-free.app/netsuite/notify";
-        var responseBody = { "response": message };
+        var webhookUrl = "https://03e7-103-112-54-213.ngrok-free.app/netsuite/notify";
+        var responseBody = { "response": itemFulfillment };
 
         try {
 

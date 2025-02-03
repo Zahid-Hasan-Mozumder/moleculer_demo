@@ -1,14 +1,14 @@
 "use strict";
 
 module.exports = {
-	name: "messages",
+	name: "health",
 	settings: {},
 	dependencies: [],
 	
 	actions: {
-		weekend: {
+		check: {
 			async handler() {
-				return "Lets talk about how we can spend the weekend";
+				return `Server is up and running on port ${process.env.PORT}`;
 			}
 		}
 	},

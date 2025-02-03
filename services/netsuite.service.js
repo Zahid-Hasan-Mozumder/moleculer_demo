@@ -13,8 +13,7 @@ module.exports = {
         notify: {
             params: {
                 response: {
-                    type: "array",
-                    items: "any",
+                    type: "any",
                     optional: true
                 },
                 status: {
@@ -24,81 +23,50 @@ module.exports = {
             },
             async handler(ctx) {
                 const { response, status } = ctx.params;
-                console.log(response);
-                console.log(status);
+
                 if (response) {
-                    for (var i = 0; i < response.length; i++) {
-                        if (response[i].itemStatus === "Picked") {
-                            const savedItemFulfillment = await this.schema.model.ItemFulfillment.create({
-                                item_fulfillment_id: response[i].itemFulfillmentId,
-                                sales_order_id: response[i].salesOrderId,
-                                item_id: response[i].itemId,
-                                already_fulfilled: response[i].alreadyFulfilled,
-                                in_process: response[i].inProcess,
-                                original_quantity: response[i].originalQuantity,
-                                remaining: response[i].remaining,
-                                status_type: response[i].statusType,
-                                item_status: response[i].itemStatus
-                            })
-                            console.log(savedItemFulfillment);
+                    if (response.items[0].itemStatus === "Picked") {
+                        var document = {
+                            item_fulfillment_id: response.itemFulfillmentId,
+                            sales_order_id: response.salesOrderId,
+                            items: []
                         }
-                        else {
-                            const updatedItemFulfillment = await this.schema.model.ItemFulfillment.updateOne(
+                        for (var i = 0; i < response.items.length; i++) {
+                            document.items.push({
+                                item_id: response.items[i].itemId,
+                                already_fulfilled: response.items[i].alreadyFulfilled,
+                                in_process: response.items[i].inProcess,
+                                original_quantity: response.items[i].originalQuantity,
+                                remaining: response.items[i].remaining,
+                                status_type: response.items[i].statusType,
+                                item_status: response.items[i].itemStatus
+                            });
+                        }
+                        const savedItemFulfillment = await this.schema.model.ItemFulfillment.create(document);
+                        console.log(savedItemFulfillment);
+                    }
+                    else {
+                        for (var i = 0; i < response.items.length; i++) {
+                            await this.schema.model.ItemFulfillment.updateOne(
                                 {
-                                    item_fulfillment_id: response[i].itemFulfillmentId,
-                                    item_id : response[i].itemId
+                                    item_fulfillment_id: response.itemFulfillmentId,
+                                    "items.item_id": response.items[i].itemId
                                 },
                                 {
                                     $set: {
-                                        already_fulfilled: response[i].alreadyFulfilled,
-                                        in_process: response[i].inProcess,
-                                        remaining: response[i].remaining,
-                                        status_type: response[i].statusType,
-                                        item_status: response[i].itemStatus
+                                        "items.$.already_fulfilled": response.items[i].alreadyFulfilled,
+                                        "items.$.in_process": response.items[i].inProcess,
+                                        "items.$.remaining": response.items[i].remaining,
+                                        "items.$.status_type": response.items[i].statusType,
+                                        "items.$.item_status": response.items[i].itemStatus
                                     }
                                 }
                             )
-                            console.log(updatedItemFulfillment);
                         }
-                    }
-                    if(response[0].salesOrderStatus === "E"){
-                        const updatedSalesOrder = await this.schema.model.SalesOrder.updateOne(
-                            {
-                                id: response[0].salesOrderId
-                            },
-                            {
-                                $set : {
-                                    status : "Pending Billing/ Partial Fulfillment"
-                                }
-                            }
-                        )
-                        console.log(updatedSalesOrder);
-                    }
-                    if(response[0].salesOrderStatus === "F"){
-                        const updatedSalesOrder = await this.schema.model.SalesOrder.updateOne(
-                            {
-                                id: response[0].salesOrderId
-                            },
-                            {
-                                $set : {
-                                    status : "Pending Billing"
-                                }
-                            }
-                        )
-                        console.log(updatedSalesOrder);
-                    }
-                    if(response[0].salesOrderStatus === "G"){
-                        const updatedSalesOrder = await this.schema.model.SalesOrder.updateOne(
-                            {
-                                id: response[0].salesOrderId
-                            },
-                            {
-                                $set : {
-                                    status : "Billed"
-                                }
-                            }
-                        )
-                        console.log(updatedSalesOrder);
+                        const updatedItemFulfillment = await this.schema.model.ItemFulfillment.findOne({
+                            item_fulfillment_id: response.itemFulfillmentId
+                        })
+                        console.log(updatedItemFulfillment);
                     }
                 }
 
@@ -117,7 +85,7 @@ module.exports = {
 
     events: {},
     methods: {},
-    created() { },
-    async started() { },
-    async stopped() { }
+    created() {},
+    async started() {},
+    async stopped() {}
 };
